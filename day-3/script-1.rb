@@ -12,15 +12,11 @@ end
 
 # Create bounding box around number, and check if special char
 def admissible?(lines, line_index, col_index, digits_number)
-  col_size = lines.first.size
-
-  box_string = ""
-  box_string << extract_subline(lines, line_index - 1, col_index, digits_number)
-  box_string << extract_subline(lines, line_index,     col_index, digits_number)
-  box_string << extract_subline(lines, line_index + 1, col_index, digits_number)
-
-
-  box_string.gsub('.', '').match? /\D/
+  [
+    extract_subline(lines, line_index - 1, col_index, digits_number),
+    extract_subline(lines, line_index,     col_index, digits_number),
+    extract_subline(lines, line_index + 1, col_index, digits_number)
+  ].join.gsub('.', '').match? /\D/
 end
 
 answer = 0
