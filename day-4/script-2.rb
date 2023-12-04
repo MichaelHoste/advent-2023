@@ -10,11 +10,9 @@ cards = lines.collect do |line|
 end
 
 cards.each_with_index do |card, index|
-  card[:num_of_cards].times do
-    card[:matching_numbers].times do |i|
-      j = index+i+1
-      cards[j][:num_of_cards] += 1 if j < cards.size
-    end
+  card[:matching_numbers].times do |i|
+    j = index+i+1
+    cards[j][:num_of_cards] += card[:num_of_cards] if j < cards.size
   end
 end
 
