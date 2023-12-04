@@ -19,6 +19,8 @@ def admissible?(lines, line_index, col_index, digits_number)
   ].join.gsub('.', '').match? /\D/
 end
 
+#########
+
 answer = 0
 
 lines = File.read('./engine.txt').split("\n")
