@@ -1,3 +1,10 @@
+# Min Seed for 271717608:  213844866
+# Min Seed for  23376094: 2334236463
+# Min Seed for  44766995: 1164454164
+# Min Seed for  69162221:  219974726
+# Min Seed for  14603068:  219974726
+# Next number was found when at less than 10%: 84206669
+
 def create_hash_rules(rules)
   hash_rules = {}
 
