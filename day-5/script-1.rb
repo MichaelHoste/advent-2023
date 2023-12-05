@@ -1,19 +1,15 @@
-def create_conversion_array(rules)
-  array = (0..99).to_a
+def create_hash_rules(rules)
+  hash_rules = {}
 
   rules.each do |rule|
     destination_start = rule.split(' ')[0].to_i
     source_start      = rule.split(' ')[1].to_i
     range             = rule.split(' ')[2].to_i
 
-    offset = 0
-    (source_start..(source_start+range-1)).each_with_index do |index|
-      array[index] = destination_start + offset
-      offset += 1
-    end
+    hash_rules[(source_start..(source_start+range-1))] = destination_start
   end
 
-  array
+  hash_rules
 end
 
 file_content = File.read('./almanac.txt')
@@ -29,13 +25,21 @@ mappings.each do |mapping|
   title = parts.first.gsub('-to-', '-').gsub(' map:', '')
   rules = parts.drop(1)
 
-  conversions_hash[title] = create_conversion_array(rules)
+  conversions_hash[title] = create_hash_rules(rules)
 end
+
+pp conversions_hash
 
 min_seed = seeds.collect do |seed|
   steps.each_with_index do |step, index|
     if index < steps.size - 1
-      seed = conversions_hash["#{steps[index]}-#{steps[index+1]}"][seed]
+      hash_rules = conversions_hash["#{steps[index]}-#{steps[index+1]}"]
+
+      range = hash_rules.keys.detect { |range| range.include?(seed) }
+
+      if range
+        seed = hash_rules[range] + (seed - range.min)
+      end
     end
   end
 
