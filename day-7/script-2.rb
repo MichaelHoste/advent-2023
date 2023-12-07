@@ -34,11 +34,7 @@ def one_pair?(cards)
 end
 
 def more_occurences(cards)
-  puts cards.inspect
-  puts cards.uniq.reverse.sort_by { |number| cards.count(number) }.last
-  puts "---"
-
-  cards.uniq.reverse.sort_by { |number| cards.count(number) }.first
+  cards.reject { |card| card == 11 }.sort_by { |number| cards.count(number) }.last
 end
 
 def jokerize(cards)
@@ -68,7 +64,6 @@ hands = lines.collect do |line|
   end
 
   {
-    :cards       => cards,
     :joker_cards => jokerize(cards),
     :weak_cards  => cards.collect { |card| card == 11 ? 0 : card }, # Replace 'J' with 0
     :bid         => line.split(" ").last.to_i
@@ -79,44 +74,21 @@ hands = hands.sort_by do |hand|
   joker_cards = hand[:joker_cards]
   weak_cards  = hand[:weak_cards]
 
-  puts "cards: " + hand[:cards].inspect
-  puts "joker: " + joker_cards.inspect
-
   if five_of_kind?(joker_cards)
-    a = [6] + weak_cards
-    puts "five"
+    [6] + weak_cards
   elsif four_of_kind?(joker_cards)
-    puts "four"
-    a = [5] + weak_cards
+    [5] + weak_cards
   elsif full_house?(joker_cards)
-    puts "house"
-    a = [4] + weak_cards
+    [4] + weak_cards
   elsif three_of_a_kind?(joker_cards)
-    puts "three"
-    a = [3] + weak_cards
+    [3] + weak_cards
   elsif two_pair?(joker_cards)
-    puts "2 pairs"
-    a = [2] + weak_cards
+    [2] + weak_cards
   elsif one_pair?(joker_cards)
-    puts "1 pair"
-    a = [1] + weak_cards
+    [1] + weak_cards
   else
-    puts "nothing"
-    a = [0] + weak_cards
+    [0] + weak_cards
   end
-
-  puts "weak:  " + weak_cards.inspect
-  puts "order: " + a.inspect
-  puts "---"
-  a
 end
 
 puts hands.collect.with_index { |hand, i| (i+1) * hand[:bid] }.sum
-
-# 250097424 too low
-# 250457154 too low
-# 250643783 too ?
-# 251415217 too ?
-# 251618246 too ?
-# 251584686 too ?
-# 251584686
