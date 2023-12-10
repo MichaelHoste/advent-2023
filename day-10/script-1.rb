@@ -11,9 +11,9 @@ def navigate(tiles, start_pipe)
 
     neighbor_pipes = []
     neighbor_pipes << tiles[pipe[:i] + 1][pipe[:j]    ] if SOUTH_LETTERS.include?(pipe[:pipe]) && NORTH_LETTERS.include?(tiles[pipe[:i] + 1][pipe[:j]    ][:pipe]) && pipe[:i] + 1 < tiles.size       # Test bottom position
-    neighbor_pipes << tiles[pipe[:i] - 1][pipe[:j]    ] if NORTH_LETTERS.include?(pipe[:pipe]) && SOUTH_LETTERS.include?(tiles[pipe[:i] - 1][pipe[:j]    ][:pipe]) && pipe[:i] - 1 > 0                # Test top position
+    neighbor_pipes << tiles[pipe[:i] - 1][pipe[:j]    ] if NORTH_LETTERS.include?(pipe[:pipe]) && SOUTH_LETTERS.include?(tiles[pipe[:i] - 1][pipe[:j]    ][:pipe]) && pipe[:i] - 1 >= 0               # Test top position
     neighbor_pipes << tiles[pipe[:i]    ][pipe[:j] + 1] if EAST_LETTERS.include?(pipe[:pipe])  && WEST_LETTERS.include?( tiles[pipe[:i]    ][pipe[:j] + 1][:pipe]) && pipe[:j] + 1 < tiles.first.size # Test right position
-    neighbor_pipes << tiles[pipe[:i]    ][pipe[:j] - 1] if WEST_LETTERS.include?(pipe[:pipe])  && EAST_LETTERS.include?( tiles[pipe[:i]    ][pipe[:j] - 1][:pipe]) && pipe[:j] - 1 > 0                # Test left position
+    neighbor_pipes << tiles[pipe[:i]    ][pipe[:j] - 1] if WEST_LETTERS.include?(pipe[:pipe])  && EAST_LETTERS.include?( tiles[pipe[:i]    ][pipe[:j] - 1][:pipe]) && pipe[:j] - 1 >= 0               # Test left position
 
     # Keep only pipes not already navigated
     neighbor_pipes = neighbor_pipes.select { |neighbor_pipe| neighbor_pipe[:value] == -1 || neighbor_pipe[:value] > pipe[:value] }
