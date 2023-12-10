@@ -18,6 +18,54 @@ def print_tiles(tiles)
   end
 end
 
+def double_size(tiles)
+  new_height = tiles.size * 2
+  new_width  = tiles.first.size * 2
+
+  (0..new_height-1).to_a.collect do |i|
+    (0..new_width-1).to_a.collect do |j|
+      if i%2 == 0 && j%2 == 0
+        pipe  = tiles[i/2][j/2][:pipe] # regular tile
+        value = tiles[i/2][j/2][:value]
+      elsif i%2 == 1 && j%2 == 0
+        top_pipe    = tiles[i/2    ][j/2][:pipe]
+        bottom_pipe = tiles[i/2 + 1][j/2][:pipe] if i/2 + 1 < tiles.size
+
+        pipe  = NORTH_LETTERS.include?(bottom_pipe) && SOUTH_LETTERS.include?(top_pipe) ? '│' : '.'
+        value = pipe == '.' ? -1 : 1
+      elsif i%2 == 0 && j%2 == 1
+        left_pipe   = tiles[i/2][j/2    ][:pipe]
+        right_pipe  = tiles[i/2][j/2 + 1][:pipe] if j/2 + 1 < tiles.first.size
+
+        pipe  = WEST_LETTERS.include?(right_pipe) && EAST_LETTERS.include?(left_pipe) ? '─' : '.'
+        value = pipe == '.' ? -1 : 1
+      else
+        pipe  = '.'
+        value = pipe == '.' ? -1 : 1
+      end
+
+      {
+        :pipe  => pipe,
+        :value => value,
+        :i     => i,
+        :j     => j,
+        :out   => false
+      }
+    end
+  end
+end
+
+def divide_size(tiles)
+  new_height = tiles.size / 2
+  new_width  = tiles.first.size / 2
+
+  (0..new_height-1).to_a.collect do |i|
+    (0..new_width-1).to_a.collect do |j|
+      tiles[i*2][j*2]
+    end
+  end
+end
+
 def navigate(tiles)
   start_tile = tiles.flatten.detect { |tile| tile[:pipe] == 'S' }
   start_tile[:value] = 0
@@ -29,9 +77,9 @@ def navigate(tiles)
 
     neighbor_tiles = []
     neighbor_tiles << tiles[tile[:i] + 1][tile[:j]    ] if SOUTH_LETTERS.include?(tile[:pipe]) && NORTH_LETTERS.include?(tiles[tile[:i] + 1][tile[:j]    ][:pipe]) && tile[:i] + 1 < tiles.size       # Test bottom position
-    neighbor_tiles << tiles[tile[:i] - 1][tile[:j]    ] if NORTH_LETTERS.include?(tile[:pipe]) && SOUTH_LETTERS.include?(tiles[tile[:i] - 1][tile[:j]    ][:pipe]) && tile[:i] - 1 >= 0                # Test top position
+    neighbor_tiles << tiles[tile[:i] - 1][tile[:j]    ] if NORTH_LETTERS.include?(tile[:pipe]) && SOUTH_LETTERS.include?(tiles[tile[:i] - 1][tile[:j]    ][:pipe]) && tile[:i] - 1 >= 0               # Test top position
     neighbor_tiles << tiles[tile[:i]    ][tile[:j] + 1] if EAST_LETTERS.include?(tile[:pipe])  && WEST_LETTERS.include?( tiles[tile[:i]    ][tile[:j] + 1][:pipe]) && tile[:j] + 1 < tiles.first.size # Test right position
-    neighbor_tiles << tiles[tile[:i]    ][tile[:j] - 1] if WEST_LETTERS.include?(tile[:pipe])  && EAST_LETTERS.include?( tiles[tile[:i]    ][tile[:j] - 1][:pipe]) && tile[:j] - 1 >= 0                # Test left position
+    neighbor_tiles << tiles[tile[:i]    ][tile[:j] - 1] if WEST_LETTERS.include?(tile[:pipe])  && EAST_LETTERS.include?( tiles[tile[:i]    ][tile[:j] - 1][:pipe]) && tile[:j] - 1 >= 0               # Test left position
 
     # Keep only pipes not already navigated
     neighbor_tiles = neighbor_tiles.select { |neighbor_tile| neighbor_tile[:value] == -1 || neighbor_tile[:value] > tile[:value] }
@@ -51,8 +99,6 @@ def flag_external_tiles(tiles)
   tiles_queue += tiles.collect { |tile_line| tile_line.first } + tiles.collect { |tile_line| tile_line.last }
 
   tiles_queue = tiles_queue.select { |tile| tile[:value] == -1 }
-
-  pp tiles_queue
 
   while tiles_queue.any?
     tile = tiles_queue.shift
@@ -103,12 +149,18 @@ end
 # Main algo
 navigate(tiles)
 
+# Allow to travel paths between 2 pipes
+tiles = double_size(tiles)
+
 # Detect external areas
 flag_external_tiles(tiles)
 
 # What really interest us!
 flag_internal_tiles(tiles)
 
+# Revert back size
+tiles = divide_size(tiles)
+
 print_tiles(tiles)
 
-puts tiles.flatten.collect { |pipe| pipe[:value] }.max
+puts tiles.flatten.select { |tile| tile && tile[:in] }.size
