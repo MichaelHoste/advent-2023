@@ -27,13 +27,18 @@ def arrangements(spring)
       start          = (spring[:path].size - spring[:line].size) + start_index
       path           = spring[:path]
       updated_path   = path[0...start].to_s + ('#' * number) + path[start+number..-1]
+      remaining_line = path[start+number+1..-1].to_s
       updated_groups = spring[:groups].drop(1)
 
-      [spring] + arrangements({
-        :path   => updated_path,
-        :line   => path[start+number+1..-1].to_s, # Create substring with empty space + the remaining )
-        :groups => updated_groups
-      })
+      if remaining_line.count('?') + remaining_line.count('#') >= updated_groups.sum #+ [updated_groups.size - 1, 0].max
+        arrangements({
+          :path   => updated_path,
+          :line   => remaining_line, # Create substring with empty space + the remaining )
+          :groups => updated_groups
+        })
+      else
+        []
+      end
     end.flatten
   else
     [spring]
@@ -67,15 +72,15 @@ springs = File.read('./springs.txt').split("\n").collect do |line|
   }
 end
 
-pp springs[0]
 
 sizes = springs.collect.with_index do |spring, i|
-  puts i
-  arrangements(spring).flatten
-                      .select { |spring| spring[:groups].none? }
-                      .uniq { |spring| spring[:path] }
-                      .select { |spring| path_ok?(spring[:path], springs[i][:groups]) }
-                      .size
+  size = arrangements(spring).flatten
+                             .select { |spring| spring[:groups].none? }
+                             .uniq { |spring| spring[:path] }
+                             .select { |spring| path_ok?(spring[:path], springs[i][:groups]) }
+                             .size
+  puts "#{i} - #{size}" if MULTIPY > 1
+  size
 end
 
 puts sizes.sum
@@ -84,4 +89,10 @@ puts sizes.sum
 # pp possible_positions('####???????.?#.', 1)
 
 
-#pp arrangements(springs[0])
+# pp springs[40]
+# pp arrangements(springs[1])
+
+
+# too low: 709232705819
+#          708115787581
+#          712617224806.0437

@@ -48,7 +48,6 @@ universe = File.read('./galaxies.txt').split("\n").collect do |line|
   line.chars
 end
 
-
 pp universe
 puts "---"
 pp universe = expand_universe(universe)
