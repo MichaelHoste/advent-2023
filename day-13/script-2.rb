@@ -56,11 +56,7 @@ old_patterns = File.read('./patterns.txt').split("\n\n").collect do |pattern|
   end
 end
 
-new_patterns = File.read('./patterns.txt').split("\n\n").collect do |pattern|
-  pattern.split("\n").collect do |pattern_line|
-    pattern_line.chars
-  end
-end
+new_patterns = Marshal.load(Marshal.dump(old_patterns)) # 🤮
 
 new_patterns = new_patterns.collect do |pattern|
   fixed_pattern(pattern)
