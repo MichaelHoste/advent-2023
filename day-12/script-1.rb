@@ -56,7 +56,6 @@ def path_ok?(path, groups)
   groups == path_groups
 end
 
-
 springs = File.read('./springs.txt').split("\n").collect do |line|
   {
     :path   => line.split(' ').first,
