@@ -120,10 +120,3 @@ values = find_repeated_sequence_and_start(sequence)
 index = (1_000_000_000 - values[:start]-1) % values[:repeated_sequence].size
 puts values[:repeated_sequence][index]
 
-
-# 104958 too high
-# 104903 too high
-# 104788 too low
-# 104844 not right
-# 104897 not right
-
