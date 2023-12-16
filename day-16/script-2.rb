@@ -1,5 +1,3 @@
-require 'set'
-
 class String
   def in?(array)
     array.include?(self)
@@ -12,21 +10,9 @@ def display(contraption)
   end
 end
 
-def as_array(result)
-  result.collect do |line|
-    line.collect do |cell|
-      if cell.any?
-        '#'
-      else
-        '.'
-      end
-    end
-  end
-end
-
 def compute_force(contraption, beam)
   result = Array.new(contraption.size) {
-    Array.new(contraption.first.size) { Set.new }
+    Array.new(contraption.first.size) { [] }
   }
 
   beams = [beam]
@@ -37,7 +23,10 @@ def compute_force(contraption, beam)
     dir, i, j = beam[:dir], beam[:i], beam[:j]
 
     if (dir == 'r' && j >= -1) || (dir == 'l' && j <= contraption.first.size) || (dir == 'd' && i >= -1) || (dir == 'u' && i <= contraption.size)
-      result[i][j] << dir if i >= 0 && j >= 0 && i < contraption.size && j < contraption.first.size
+      if i >= 0 && j >= 0 && i < contraption.size && j < contraption.first.size
+        result[i][j] << dir
+        result[i][j].uniq!
+      end
 
       case dir
       when 'r'
@@ -50,7 +39,7 @@ def compute_force(contraption, beam)
         i = i + 1
       end
 
-      if i >= 0 && j >= 0 && i < contraption.size && j < contraption.first.size && result[i][j] != '#'
+      if i >= 0 && j >= 0 && i < contraption.size && j < contraption.first.size #&&
         cell     = contraption[i][j]
         new_dirs = []
 
@@ -99,8 +88,8 @@ def compute_force(contraption, beam)
   # puts ""
   # display(as_array(result))
 
-  as_array(result).collect do |line|
-    line.count { |cell| cell == '#' }
+  result.collect do |line|
+    line.count { |cell| cell.any? }
   end.sum
 end
 
