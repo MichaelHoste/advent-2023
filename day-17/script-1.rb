@@ -1,32 +1,20 @@
 def keep_relevant_moves(node)
-  last_moves = node[:moves].last(3)
+  to_keep = 1
 
-  if last_moves.size == 1
-    relevant_moves = last_moves
-  elsif last_moves.size == 2
-    if last_moves.uniq.size == 1
-      relevant_moves = last_moves
+  (2..3).each do |num|
+    if node[:moves].last(num).uniq.size == 1
+      to_keep = num
     else
-      relevant_moves = last_moves.last(1)
-    end
-  elsif last_moves.size == 3
-    if last_moves.uniq.size == 1
-      relevant_moves = last_moves
-    elsif last_moves.last(2).uniq.size == 1
-      relevant_moves = last_moves.last(2)
-    else
-      relevant_moves = last_moves.last(1)
+      break
     end
   end
 
-  node[:moves] = relevant_moves
+  node[:moves] = node[:moves].last(to_keep)
 
   return node
 end
 
 def evaluate_h(block, node)
-  #node[:total] + (block.size-1 - node[:i]) + (block.first.size-1 - node[:j])
-
   vertical   = block.size-1 - node[:i]
   horizontal = block.first.size-1 - node[:j]
 
