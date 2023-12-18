@@ -4,7 +4,6 @@ class String
   end
 end
 
-
 def keep_relevant_moves(node)
   to_keep = 1
 
@@ -16,9 +15,13 @@ def keep_relevant_moves(node)
     end
   end
 
-  node[:moves] = node[:moves].last(to_keep)
-
-  return node
+  return {
+    :i     => node[:i],
+    :j     => node[:j],
+    :moves => node[:moves].last(to_keep),
+    :total => node[:total],
+    :eval  => node[:eval]
+  }
 end
 
 def evaluate_h(block, node)
@@ -40,10 +43,10 @@ end
 visited_nodes = {}
 
 stack = [{
-  :i      => 0,
-  :j      => 0,
-  :total  => 0,
-  :moves  => []
+  :i     => 0,
+  :j     => 0,
+  :total => 0,
+  :moves => []
 }]
 
 current_weight = 0
@@ -58,8 +61,9 @@ while true
   end
 
   # Print result that was found
-  if node[:i] == block.size-1 && node[:j] == block.first.size-1
+  if node[:i] == block.size-1 && node[:j] == block.first.size-1 && node[:moves].last(4).uniq.size == 1
     puts node.inspect
+    puts node[:moves].join
     puts node[:total]
     puts "stack size: #{stack.size}"
     break
@@ -134,8 +138,8 @@ while true
   end
 
   next_nodes.each do |next_node|
-    next_node = keep_relevant_moves(next_node)
-    hash_key  = create_hash_key(next_node)
+    next_node_for_key = keep_relevant_moves(next_node)
+    hash_key          = create_hash_key(next_node_for_key)
 
     if !visited_nodes[hash_key] || next_node[:total] < visited_nodes[hash_key]
       visited_nodes[hash_key] = next_node[:total]
