@@ -201,7 +201,9 @@ while i < height
 
     #puts next_inside
 
-    if state == :out
+    if r = rows.detect { |row| i == row[:i] && current_j == row[:start] }
+      total += (r[:end] - r[:start])
+    elsif state == :out
       total += 1
 
       print "add #{1} on line #{i} "
@@ -211,6 +213,7 @@ while i < height
         state = :in
       else
         puts "and stay OUT"
+        state = :out
       end
     elsif state == :in
       weight = next_j - current_j
@@ -218,7 +221,7 @@ while i < height
 
       print "add #{weight} on line #{i} "
 
-      if next_inside == :left && !rows.detect { |row| i == row[:i] && current_j == row[:end] }
+      if next_inside == :left# && !rows.detect { |row| i == row[:i] && next_j == row[:end] }
         puts "and go OUT"
         state = :out
       else
