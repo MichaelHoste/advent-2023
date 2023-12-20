@@ -57,8 +57,8 @@ block = File.read('./plan.txt').split("\n").collect do |line|
   previous = instructions.last
 
   instruction = {
-    :dir      => old_dir,      #dir,     #old_dir,
-    :distance => old_distance, #distance #old_distance,
+    :dir      => dir,      #dir,     #old_dir,
+    :distance => distance, #distance #old_distance,
   }
 
   if !previous
@@ -194,15 +194,20 @@ while i < height
   current_j = 0
   state     = :out
 
-  intersect_cols.each do |col|
+  intersect_cols.each_with_index do |col, index|
     puts col.inspect
     next_j      = col[:j]
     next_inside = col[:inside]
 
     #puts next_inside
 
-    if r = rows.detect { |row| i == row[:i] && current_j == row[:start] }
+    if r = rows.detect { |row| i == row[:i] && next_j == row[:end] }
       total += (r[:end] - r[:start])
+      if next_inside == :left
+        state = :out
+      else
+        state = :in
+      end
     elsif state == :out
       total += 1
 
