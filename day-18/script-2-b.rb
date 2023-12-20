@@ -62,7 +62,7 @@ block = File.read('./plan.txt').split("\n").collect do |line|
   }
 
   if !previous
-    instruction[:inside] = :bottom
+    instruction[:inside] = :top # may need to be adapted here!
   else
     # right
     if previous[:dir] == 'd' && instruction[:dir] == 'r' && previous[:inside] == :left
@@ -195,46 +195,27 @@ while i < height
   state     = :out
 
   intersect_cols.each_with_index do |col, index|
-    puts col.inspect
     next_j      = col[:j]
     next_inside = col[:inside]
 
-    #puts next_inside
-
     if r = rows.detect { |row| i == row[:i] && next_j == row[:end] }
       total += (r[:end] - r[:start])
-      if next_inside == :left
-        state = :out
-      else
-        state = :in
-      end
+      state = next_inside == :left ? :out : :in
     elsif state == :out
       total += 1
 
-      print "add #{1} on line #{i} "
-
       if next_inside == :right
-        puts "and go IN"
         state = :in
-      else
-        puts "and stay OUT"
-        state = :out
       end
     elsif state == :in
       weight = next_j - current_j
       total += weight
 
-      print "add #{weight} on line #{i} "
 
-      if next_inside == :left# && !rows.detect { |row| i == row[:i] && next_j == row[:end] }
-        puts "and go OUT"
+      if next_inside == :left
         state = :out
-      else
-        puts "and stay IN"
       end
     end
-
-    puts "====="
 
     current_j = next_j
   end
@@ -246,5 +227,8 @@ puts total
 
 
 # 112073595315148 too low
+# 43214502944701 too low
+
+# 112074045986829 GOOOO
 
 #pp instructions
